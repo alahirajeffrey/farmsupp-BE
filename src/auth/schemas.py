@@ -13,3 +13,12 @@ class UserReturnSchema(BaseModel):
     is_mobile_verified: bool
     created_at: datetime
     updated_at: datetime
+
+class LoginSchema(BaseModel):
+    mobile_number: str
+    password: str
+
+class ChangePasswordSchema(BaseModel):
+    old_password: str
+    new_password: str
+    
