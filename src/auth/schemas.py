@@ -1,5 +1,5 @@
 from datetime import datetime
-from pydantic import BaseModel, constr, Field
+from pydantic import BaseModel, constr, Field, UUID4
 
 class CreateUserSchema(BaseModel):
     mobile_number: str
@@ -8,7 +8,7 @@ class CreateUserSchema(BaseModel):
 
 class UserReturnSchema(BaseModel):
     mobile_number: str
-    id: str
+    id: UUID4
     country_code: str
     is_mobile_verified: bool
     created_at: datetime
