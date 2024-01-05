@@ -27,7 +27,7 @@ async def register_user(data: schemas.CreateUserSchema, db: Session = Depends(ge
 
     db.add(new_user)
     db.commit()
-    db.refresh()
+    db.refresh(new_user)
 
 
     return new_user
