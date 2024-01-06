@@ -15,9 +15,24 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
-    articles = relationship("Article", back_populates="author")
     otp = relationship("Otp", uselist=False, back_populates="user")
+    profile = relationship("Profile", uselist=False, back_populates='user')
 
+class Profile(Base):
+    __tablename__ = "profiles"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
+    email = Column(String, nullable=True, unique=True)
+    role = Column(String, nullable=True)
+    mobile_number = Column(String, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+
+    articles = relationship("Article", back_populates="author")
+    user = relationship("User", back_populates="profile")
 
 class Otp(Base):
     __tablename__ = "otp"
@@ -33,10 +48,10 @@ class Article(Base):
     __tablename__ = "articles"
 
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
-    author_id= Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    author_id= Column(UUID(as_uuid=True), ForeignKey("profiles.id"))
     body = Column(String, nullable=False)
     title = Column(String,  nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
-    author = relationship("User", back_populates="articles")
+    author = relationship("Profile", back_populates="articles")
