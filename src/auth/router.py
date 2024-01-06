@@ -18,7 +18,6 @@ async def register_user(data: schemas.CreateUserSchema, db: Session = Depends(ge
             detail= "User with mobile number already exists"
         )
     
-    ## create user
     new_user = models.User(
         mobile_number= data.mobile_number,
         password= utils.hash_password(data.password),
@@ -26,6 +25,14 @@ async def register_user(data: schemas.CreateUserSchema, db: Session = Depends(ge
     )
 
     db.add(new_user)
+    db.commit()
+
+    new_profile = models.Profile(
+        mobile_number = data.mobile_number, 
+        user_id= new_user.id  
+    )
+
+    db.add(new_profile)
     db.commit()
     db.refresh(new_user)
 
@@ -43,6 +50,8 @@ async def login(data: schemas.LoginSchema, db: Session = Depends(get_db)):
             detail= "User does not exist"
         )
     
+    # profile = db.query(models.Profile).filter(models.Profile.user_id == user_exists.id).first()
+    
     ## verify password
     if not utils.verify_password(data.password, user_exists.password):
         raise HTTPException(
@@ -50,6 +59,12 @@ async def login(data: schemas.LoginSchema, db: Session = Depends(get_db)):
             detail="Incorrect password"
         )
     
+    # payload = {
+    #     "sub": user_exists.id,
+    #     "mobile_number": user_exists.mobile_number,
+    #     "profile_id": profile.id
+    # }
+
     access_token = utils.create_access_token(user_exists.id)
 
     return { "access_token": access_token }
@@ -60,7 +75,6 @@ async def change_password(
     db: Session = Depends(get_db), 
     payload: dict = Depends(utils.validate_access_token)):
 
-    ## check if user exists
     user_exists = db.query(models.User).filter(models.User.id == payload.get('sub')).first()
     if(user_exists is None):
         raise HTTPException(
@@ -75,7 +89,6 @@ async def change_password(
             detail="Incorrect password"
         )
 
-    ## updated user password in database
     db.query(models.User).filter(models.User.id == payload.get('sub')).update({"password": utils.hash_password(data.new_password)})
     db.commit()
 
