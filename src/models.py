@@ -55,3 +55,26 @@ class Article(Base):
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
     author = relationship("Profile", back_populates="articles")
+
+class Conversation(Base):
+    __tablename__ = "conversations"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
+    is_deleted = Column(Boolean, default=False)
+    profile_id = Column(UUID(as_uuid=True), ForeignKey('profiles.id', ondelete='CASCADE'), nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+
+    profile = relationship("Profile", back_populates="conversations")
+
+class Message(Base):
+    __tablename__ = "messages"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
+    user_message = Column(String,  nullable=False)
+    chatbot_response = Column(String,  nullable=True)
+    conversation_id = Column(UUID(as_uuid=True), ForeignKey('conversations.id', ondelete='CASCADE'), nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+
+    conversation = relationship("Conversation", back_populates="messages")
