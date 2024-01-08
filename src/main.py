@@ -4,6 +4,7 @@ from article.router import router as article_router
 from auth.router import router as auth_router
 from profile.router import router as profile_router
 from chat.router import router as chat_router
+from product.router import router as product_router
 
 app = FastAPI()
 
@@ -19,7 +20,7 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(profile_router , prefix="/api/v1/profile", tags=["profile"])
 app.include_router(article_router , prefix="/api/v1/article", tags=["article"])
 app.include_router(chat_router , prefix="/api/v1/chat", tags=["chat"])
-
+app.include_router(product_router , prefix="/api/v1/product", tags=["product"])
 
 @app.get("/")
 async def root():
