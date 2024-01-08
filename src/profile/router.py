@@ -36,13 +36,30 @@ async def update_profile(
 
     return profile
 
-@router.get('/{profile_id}', status_code=status.HTTP_200_OK, response_model=schemas.ProfileReturnSchema)
-async def get_profile(
+@router.get('/other/{profile_id}', status_code=status.HTTP_200_OK, response_model=schemas.ProfileReturnSchema)
+async def get_others_profile(
     profile_id: str,
     db: Session = Depends(get_db),
     payload: dict = Depends(auth_utils.validate_access_token)):
 
     profile = db.query(models.Profile).filter(models.Profile.id == profile_id).first()
+    if not profile:
+        raise HTTPException(
+            status_code= status.HTTP_404_NOT_FOUND,
+            detail= "Profile does not exist"
+        )
+
+    return profile
+
+@router.get('/own', status_code=status.HTTP_200_OK, response_model=schemas.ProfileReturnSchema)
+async def get_own_profile(
+    db: Session = Depends(get_db),
+    payload: dict = Depends(auth_utils.validate_access_token)):
+
+    ## convert user id from payload to UUID
+    user_id_from_token = UUID(payload.get('sub'))
+
+    profile = db.query(models.Profile).filter(models.Profile.user_id == user_id_from_token).first()
     if not profile:
         raise HTTPException(
             status_code= status.HTTP_404_NOT_FOUND,
