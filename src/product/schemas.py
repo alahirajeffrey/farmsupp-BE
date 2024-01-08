@@ -8,7 +8,7 @@ class CreateProductSchema(BaseModel):
     price: int
     quantity: int
     unit: str
-    name_of_farmer: str
+    profile_id: str
 
 class ProductReturnSchema(CreateProductSchema):
     created_at: datetime
@@ -16,7 +16,7 @@ class ProductReturnSchema(CreateProductSchema):
     id: UUID4
 
 class ProductUpdateSchema(BaseModel):
-    name: Optional[str] = None
+    title: Optional[str] = None
     description: Optional[str] = None
     price: Optional[int] = None
     quantity: Optional[int] = None
