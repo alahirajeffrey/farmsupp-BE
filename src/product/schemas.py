@@ -3,7 +3,7 @@ from pydantic import BaseModel, UUID4
 from typing import Optional
 
 class CreateProductSchema(BaseModel):
-    title: str
+    name: str
     description: str
     price: int
     quantity: int
@@ -16,7 +16,7 @@ class ProductReturnSchema(CreateProductSchema):
     id: UUID4
 
 class ProductUpdateSchema(BaseModel):
-    title: Optional[str] = None
+    name: Optional[str] = None
     description: Optional[str] = None
     price: Optional[int] = None
     quantity: Optional[int] = None

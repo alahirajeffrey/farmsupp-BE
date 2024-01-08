@@ -17,11 +17,11 @@ async def create_product():
 async def get_product_by_id():
     pass
 
-@router.get('/name/{product_name}', status_code=status.HTTP_200_OK )
+@router.get('/name/{name}', status_code=status.HTTP_200_OK )
 async def get_products_by_name():
     pass
 
-@router.patch('/upload/image', status_code=status.HTTP_200_OK )
+@router.patch('/upload/images', status_code=status.HTTP_200_OK )
 async def upload_product_images():
     pass
 
