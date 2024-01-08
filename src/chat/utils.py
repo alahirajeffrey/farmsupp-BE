@@ -1,5 +1,6 @@
 from openai import OpenAI
 from config import config
+import logging
 
 ## generate response from openai 
 async def generate_openai_response(message):
@@ -13,7 +14,7 @@ async def generate_openai_response(message):
 
         return response.choices[0].message.content.strip()
     except Exception as e:
-        print(e)
+        logging.exception(e)
 
 ## remove new lines from openai response
 def remove_newlines(text):
