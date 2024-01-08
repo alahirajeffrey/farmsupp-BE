@@ -85,7 +85,7 @@ async def send_message(
     db.commit()
 
     ## generate openai response and remove newlines
-    response = chat_utils.generate_openai_response(data.user_message)
+    response = await chat_utils.generate_openai_response(data.user_message)
     updated_response = chat_utils.remove_newlines(response)
 
     ## update message 
