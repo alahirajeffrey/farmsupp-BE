@@ -33,7 +33,8 @@ class Profile(Base):
 
     articles = relationship("Article", back_populates="author")
     user = relationship("User", back_populates="profile")
-
+    conversation = relationship("Conversation", back_populates="profile")
+    
 class Otp(Base):
     __tablename__ = "otp"
 
