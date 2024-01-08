@@ -6,12 +6,14 @@ from sqlalchemy.orm import Session
 from auth import utils as auth_utils
 from uuid import UUID
 from profile.schemas import Role
+from chat.utils import generate_openai_response
+from config import config
 
 router = APIRouter()
 
 @router.post('', status_code=status.HTTP_201_CREATED )
 async def create_product():
-    pass
+    return await generate_openai_response("how do i plant rice")
 
 @router.get('/{product_id}', status_code=status.HTTP_200_OK )
 async def get_product_by_id():
