@@ -14,7 +14,8 @@ class CreateMessageSchema(BaseModel):
 class MessageReturnSchema(CreateMessageSchema):
     id: UUID4
     conversation_id: UUID4
-    chatbot_resonse: str
+    chatbot_response: str
+    user_message: str
     created_at: datetime
     updated_at: datetime
 
