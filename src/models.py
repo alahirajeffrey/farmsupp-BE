@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Boolean, Column, String, TIMESTAMP, text, ForeignKey
+from sqlalchemy import Boolean, Column, String, TIMESTAMP, text, ForeignKey, Integer
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -31,9 +31,25 @@ class Profile(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
-    articles = relationship("Article", back_populates="author")
-    user = relationship("User", back_populates="profile")
-    conversation = relationship("Conversation", back_populates="profile")
+    articles = relationship("Article")
+    user = relationship("User")
+    conversation = relationship("Conversation")
+    products = relationship("Product")
+
+class Product(Base):
+    __tablename__ = "products"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
+    profile_id= Column(UUID(as_uuid=True), ForeignKey("profiles.id"), unique=True, nullable=False)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    price = Column(Integer, nullable=False)
+    quantity = Column(Integer, nullable=False)
+    unit = Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+
+    profile = relationship("Profile")
     
 class Otp(Base):
     __tablename__ = "otp"
@@ -43,7 +59,7 @@ class Otp(Base):
     token = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     
-    user = relationship("User", back_populates="otp")
+    user = relationship("User")
 
 class Article(Base):
     __tablename__ = "articles"
@@ -55,7 +71,7 @@ class Article(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
-    author = relationship("Profile", back_populates="articles")
+    author = relationship("Profile")
 
 class Conversation(Base):
     __tablename__ = "conversations"
@@ -66,7 +82,7 @@ class Conversation(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
-    profile = relationship("Profile", back_populates="conversations")
+    profile = relationship("Profile")
 
 class Message(Base):
     __tablename__ = "messages"
@@ -78,4 +94,4 @@ class Message(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
-    conversation = relationship("Conversation", back_populates="messages")
+    conversation = relationship("Conversation")
