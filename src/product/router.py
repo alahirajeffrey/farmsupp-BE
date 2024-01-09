@@ -80,10 +80,6 @@ async def get_products_by_name(
     
     return products
 
-@router.patch('/upload/images', status_code=status.HTTP_200_OK )
-async def upload_product_images():
-    pass
-
 @router.get('/farmer/{profile_id}', status_code=status.HTTP_200_OK )
 async def get_products_by_famer_id(
     profile_id: str,
@@ -111,3 +107,6 @@ async def update_product():
 async def delete_product_by_id():
     pass
 
+@router.patch('/upload/images', status_code=status.HTTP_200_OK )
+async def upload_product_images():
+    pass
