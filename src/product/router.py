@@ -71,7 +71,7 @@ async def get_products_by_name(
 
     offset = (page - 1) * page_size
 
-    products = db.query(models.Product).filter(models.Product.name == name)offset(offset).limit(page_size).all()
+    products = db.query(models.Product).filter(models.Product.name == name).offset(offset).limit(page_size).all()
     if len(products) == 0:
         raise HTTPException(
             status_code= status.HTTP_404_NOT_FOUND,
@@ -85,8 +85,23 @@ async def upload_product_images():
     pass
 
 @router.get('/farmer/{profile_id}', status_code=status.HTTP_200_OK )
-async def get_products_by_famer_id():
-    pass
+async def get_products_by_famer_id(
+    profile_id: str,
+    db: Session = Depends(get_db),
+    page: int = Query(1, description="Page number", gt=0),
+    page_size: int = Query(10, description="Items per page", gt=0, le=100),
+    payload: dict = Depends(auth_utils.validate_access_token)):
+
+    offset = (page - 1) * page_size
+
+    products = db.query(models.Product).filter(models.Product.profile_id == profile_id).offset(offset).limit(page_size).all()
+    if len(products) == 0:
+        raise HTTPException(
+            status_code= status.HTTP_404_NOT_FOUND,
+            detail= "Profile has not listed any articles yet"
+        )
+    
+    return products
 
 @router.patch('/{product_id}', status_code=status.HTTP_200_OK )
 async def update_product():
