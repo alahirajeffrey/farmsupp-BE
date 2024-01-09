@@ -99,13 +99,74 @@ async def get_products_by_famer_id(
     
     return products
 
-@router.patch('/{product_id}', status_code=status.HTTP_200_OK )
-async def update_product():
-    pass
-
 @router.delete('/{product_id}', status_code=status.HTTP_200_OK )
-async def delete_product_by_id():
-    pass
+async def delete_product_by_id(
+    product_id: str,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(auth_utils.validate_access_token)):
+
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if not product:
+        raise HTTPException(
+            status_code= status.HTTP_404_NOT_FOUND,
+            detail= "Product does not exist"
+        )
+    
+    ## convert user id from payload to UUID
+    user_id_from_token = UUID(payload.get('sub'))
+    profile = db.query(models.Profile).filter(models.Profile.user_id == user_id_from_token).first()
+     
+    if product.profile_id != profile.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You cannot delete a product you did not list"
+        ) 
+    
+    db.query(models.Product).filter(models.Product.id == product_id).delete()
+    db.commit()
+
+    return {"message":"Product deleted"}
+
+
+@router.patch('/{product_id}', status_code=status.HTTP_200_OK )
+async def update_product(
+    product_id: str,
+    data: schemas.ProductUpdateSchema,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(auth_utils.validate_access_token)):
+
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    if not product:
+        raise HTTPException(
+            status_code= status.HTTP_404_NOT_FOUND,
+            detail= "Product does not exist"
+        )
+    
+    ## convert user id from payload to UUID
+    user_id_from_token = UUID(payload.get('sub'))
+    profile = db.query(models.Profile).filter(models.Profile.user_id == user_id_from_token).first()
+     
+    if product.profile_id != profile.id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You cannot update a product you did not list"
+        ) 
+    
+    if data.name is not None:
+        product.name = data.name
+    if data.description is not None:
+        product.description = data.description
+    if data.price is not None:
+        product.price = data.price
+    if data.quantity is not None:
+        product.quantity = data.quantity
+    if data.unit is not None:
+        product.unit = data.unit
+
+    db.commit()
+    db.refresh(product)
+
+    return product
 
 @router.patch('/upload/images', status_code=status.HTTP_200_OK )
 async def upload_product_images():
