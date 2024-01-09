@@ -94,7 +94,7 @@ async def get_products_by_famer_id(
     if len(products) == 0:
         raise HTTPException(
             status_code= status.HTTP_404_NOT_FOUND,
-            detail= "Profile has not listed any articles yet"
+            detail= "Profile has not listed any products yet"
         )
     
     return products
