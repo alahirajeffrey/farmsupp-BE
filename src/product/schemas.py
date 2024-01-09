@@ -8,7 +8,6 @@ class CreateProductSchema(BaseModel):
     price: int
     quantity: int
     unit: str
-    profile_id: str
 
 class ProductReturnSchema(CreateProductSchema):
     created_at: datetime
