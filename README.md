@@ -16,6 +16,11 @@ Farmsupp is a platform built for the agricultural sector that uses AI models to 
 - Install requirements using `pip install -r requirements.txt`
 - Run development server by typing `bash run_dev_server.sh`
 
+## Useful commands
+
+- `alembic revision --autogenerate` to automatically generate migrations
+- `alembic upgrade head` to run migrations
+
 ## Author
 
 [Alahira Jeffrey](https://github.com/alahirajeffrey)
