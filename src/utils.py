@@ -8,6 +8,7 @@ from fastapi import HTTPException, status, Depends
 from openai import OpenAI
 import logging
 import cloudinary
+from cloudinary import uploader
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", scheme_name="JWT")
 
@@ -82,16 +83,22 @@ def upload_image(type, image_path):
 
     try:
         if type == "profile_picture":
-            response = cloudinary.uploader.upload_image(
+            response = uploader.upload_image(
                 file= image_path,
                 folder="profile/picture/",
+                transformation=[
+                    {"width": 110, "height": 110, "crop": "fill"},
+                    ]
             )
             return response
             
         if type == "product_image":
-            response = cloudinary.uploader.upload_image(
+            response = uploader.upload_image(
                 file= image_path,
                 folder="product/image/",
+                transformation=[
+                    {"width": 200, "height": 300, "crop": "fill"},
+                    ]
             )
             return response
         
