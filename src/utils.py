@@ -7,6 +7,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException, status, Depends
 from openai import OpenAI
 import logging
+import cloudinary
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", scheme_name="JWT")
 
@@ -71,3 +72,30 @@ async def generate_openai_response(message):
 ## remove new lines from openai response
 def remove_newlines(text):
     return text.replace("\n", "")
+
+def upload_image(type, image_path):
+    cloudinary.config(
+        cloud_name=config.get("CLOUDINARY_CLOUD_NAME"),
+        api_key=config.get("CLOUDINARY_API_KEY"),
+        api_secret=config.get("CLOUDINARY_API_SECRET")
+    )
+
+    try:
+        if type == "profile_picture":
+            response = cloudinary.uploader.upload_image(
+                file= image_path,
+                folder="profile/picture/",
+            )
+            return response
+            
+        if type == "product_image":
+            response = cloudinary.uploader.upload_image(
+                file= image_path,
+                folder="product/image/",
+            )
+            return response
+        
+    except Exception as e:
+        logging.error(f"Error uploading image to Cloudinary: {e}")
+        return None
+    
