@@ -104,5 +104,5 @@ def upload_image(type, image_path):
         
     except Exception as e:
         logging.error(f"Error uploading image to Cloudinary: {e}")
-        return None
+        return "Error uploading image to Cloudinary"
     
