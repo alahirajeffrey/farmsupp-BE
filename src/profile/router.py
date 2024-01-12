@@ -24,10 +24,14 @@ async def update_profile(
             detail= "Profile does not exist"
         )
 
-    profile.first_name = data.first_name
-    profile.last_name = data.last_name
-    profile.email = data.email
-    profile.role = data.role
+    if data.first_name is not None:
+        profile.first_name = data.first_name
+    if data.last_name is not None:
+        profile.last_name = data.last_name
+    if data.email is not None:
+        profile.email = data.email
+    if data.role is not None:
+        profile.role = data.role
 
 
     db.add(profile)
