@@ -50,6 +50,19 @@ class Product(Base):
     updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
 
     profile = relationship("Profile")
+    images = relationship("Image")
+
+class Image(Base):
+    __tablename__ = "images"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
+    product_id= Column(UUID(as_uuid=True), ForeignKey("products.id"), unique=True, nullable=False)
+    file_name= Column(String, nullable=False)
+    url= Column(String, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+    updated_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+
+    product = relationship("Product")
     
 class Otp(Base):
     __tablename__ = "otp"
