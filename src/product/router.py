@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, HTTPException, Query
+from fastapi import APIRouter, status, Depends, HTTPException, Query, UploadFile
 from product import schemas
 from database import get_db
 import models
@@ -168,6 +168,38 @@ async def update_product(
 
     return product
 
-@router.patch('/upload/images', status_code=status.HTTP_200_OK )
-async def upload_product_images():
-    pass
+@router.patch('/upload/images/{product_id}', status_code=status.HTTP_200_OK )
+async def upload_product_images(
+    product_id: str,
+    file: UploadFile,
+    db: Session = Depends(get_db),
+    payload: dict = Depends(utils.validate_access_token)
+    ):
+    
+    if not file :
+        raise HTTPException(
+            status_code= status.HTTP_400_BAD_REQUEST,
+            detail= "No file sent"
+        )
+
+    if file.content_type != "jpeg" | file.content_type != "img":
+        raise HTTPException(
+            status_code= status.HTTP_400_BAD_REQUEST,
+            detail= "Incorrect file type"
+        )
+
+    ## upload product image to db
+    response = utils.upload_image("product_image", file.file)
+
+    new_image = models.Image(
+        product_id= product_id,
+        file_name = file.filename,
+        url= response.url
+    )
+
+    db.add(new_image)
+    db.commit()
+    db.refresh(new_image)
+
+    return new_image
+    # pass
