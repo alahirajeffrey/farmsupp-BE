@@ -1,18 +1,17 @@
 import models
-from auth import utils as auth_utils
+import utils
 from sqlalchemy.orm import Session
 from database import get_db
 from fastapi import APIRouter, status, Depends, HTTPException, Query
 from chat import schemas
 from uuid import UUID
-from chat import utils as chat_utils
 
 router = APIRouter()
 
 @router.post("", status_code=status.HTTP_201_CREATED, response_model=schemas.ConversationReturnSchema)
 async def start_conversation(
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)
+    payload: dict = Depends(utils.validate_access_token)
     ):
 
     ## convert user id from payload to UUID
@@ -32,7 +31,7 @@ async def start_conversation(
 @router.get("/{conversation_id}", status_code=status.HTTP_200_OK)
 async def get_conversation(
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token),
+    payload: dict = Depends(utils.validate_access_token),
     page: int = Query(1, description="Page number", gt=0),
     page_size: int = Query(10, description="Items per page", gt=0, le=100)):
 
@@ -63,7 +62,7 @@ async def get_conversation(
 async def send_message(
     data: schemas.CreateMessageSchema,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     ## convert user id from payload to UUID
     user_id_from_token = UUID(payload.get('sub'))
@@ -85,8 +84,8 @@ async def send_message(
     db.commit()
 
     ## generate openai response and remove newlines
-    response = await chat_utils.generate_openai_response(data.user_message)
-    updated_response = chat_utils.remove_newlines(response)
+    response = await utils.generate_openai_response(data.user_message)
+    updated_response = utils.remove_newlines(response)
 
     ## update message 
     message.chatbot_response = updated_response

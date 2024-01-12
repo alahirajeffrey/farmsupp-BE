@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, Depends, HTTPException
 import models
-from auth import utils as auth_utils
+import utils
 from sqlalchemy.orm import Session
 from database import get_db
 from . import schemas
@@ -12,7 +12,7 @@ router = APIRouter()
 async def update_profile(
     data: schemas.UpdateProfileSchema, 
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     ## convert user id from payload to UUID
     user_id_from_token = UUID(payload.get('sub'))
@@ -40,7 +40,7 @@ async def update_profile(
 async def get_others_profile(
     profile_id: str,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     profile = db.query(models.Profile).filter(models.Profile.id == profile_id).first()
     if not profile:
@@ -54,7 +54,7 @@ async def get_others_profile(
 @router.get('/own', status_code=status.HTTP_200_OK, response_model=schemas.ProfileReturnSchema)
 async def get_own_profile(
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     ## convert user id from payload to UUID
     user_id_from_token = UUID(payload.get('sub'))

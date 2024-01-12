@@ -3,7 +3,7 @@ from product import schemas
 from database import get_db
 import models
 from sqlalchemy.orm import Session
-from auth import utils as auth_utils
+import utils
 from uuid import UUID
 from profile.schemas import Role
 
@@ -13,7 +13,7 @@ router = APIRouter()
 async def create_product(
     data: schemas.CreateProductSchema,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     ## convert user id from payload to UUID
     user_id_from_token = UUID(payload.get('sub'))
@@ -50,7 +50,7 @@ async def create_product(
 async def get_product_by_id(
     product_id: str,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
     
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if not product:
@@ -67,7 +67,7 @@ async def get_products_by_name(
     db: Session = Depends(get_db),
     page: int = Query(1, description="Page number", gt=0),
     page_size: int = Query(10, description="Items per page", gt=0, le=100),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     offset = (page - 1) * page_size
 
@@ -86,7 +86,7 @@ async def get_products_by_famer_id(
     db: Session = Depends(get_db),
     page: int = Query(1, description="Page number", gt=0),
     page_size: int = Query(10, description="Items per page", gt=0, le=100),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     offset = (page - 1) * page_size
 
@@ -103,7 +103,7 @@ async def get_products_by_famer_id(
 async def delete_product_by_id(
     product_id: str,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if not product:
@@ -133,7 +133,7 @@ async def update_product(
     product_id: str,
     data: schemas.ProductUpdateSchema,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     if not product:

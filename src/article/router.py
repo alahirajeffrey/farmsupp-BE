@@ -3,7 +3,7 @@ from article import schemas
 from database import get_db
 import models
 from sqlalchemy.orm import Session
-from auth import utils as auth_utils
+import utils
 from uuid import UUID
 from profile.schemas import Role
 
@@ -13,7 +13,7 @@ router = APIRouter()
 async def create_article(
     data: schemas.CreateArticleSchema, 
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     ## convert user id from payload to UUID
     user_id_from_token = UUID(payload.get('sub'))
@@ -48,7 +48,7 @@ async def create_article(
 def get_single_article(
     article_id: str,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     article = db.query(models.Article).filter(models.Article.id == article_id).first()
     if not article:
@@ -64,7 +64,7 @@ def get_all_user_articles(
     db: Session = Depends(get_db),
     page: int = Query(1, description="Page number", gt=0),
     page_size: int = Query(10, description="Items per page", gt=0, le=100),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     offset = (page - 1) * page_size
 
@@ -92,7 +92,7 @@ def get_all_user_articles(
 def delete_article(
     article_id: str,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     article = db.query(models.Article).filter(models.Article.id == article_id).first()
     if not article:
@@ -121,7 +121,7 @@ def update_article(
     article_id: str,
     data: schemas.ArticleUpdateSchema,
     db: Session = Depends(get_db),
-    payload: dict = Depends(auth_utils.validate_access_token)):
+    payload: dict = Depends(utils.validate_access_token)):
 
     article = db.query(models.Article).filter(models.Article.id == article_id).first()
     if not article:
