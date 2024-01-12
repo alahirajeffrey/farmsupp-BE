@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status, Depends, HTTPException
+from fastapi import APIRouter, status, Depends, HTTPException, Query
 import models
 import utils
 from sqlalchemy.orm import Session
@@ -71,3 +71,22 @@ async def get_own_profile(
         )
 
     return profile
+
+@router.get('/farmers', status_code=status.HTTP_200_OK)
+async def get_farmers_profiles(
+    db: Session = Depends(get_db),
+    page: int = Query(1, description="Page number", gt=0),
+    page_size: int = Query(10, description="Items per page", gt=0, le=100),
+    payload: dict = Depends(utils.validate_access_token)):
+
+    offset = (page - 1) * page_size
+
+    profiles = db.query(models.Profile).filter(models.Profile.role == "FARMER").offset(offset).limit(page_size).all()
+    if len(profiles) == 0:
+        raise HTTPException(
+            status_code= status.HTTP_404_NOT_FOUND,
+            detail= "No farmers have registered"
+        )
+    
+    return profiles
+    
