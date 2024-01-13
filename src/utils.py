@@ -10,6 +10,7 @@ import logging
 import cloudinary
 from cloudinary import uploader
 from twilio.rest import Client
+import random
 
 TWILIO_ACCOUNT_SID = config.get('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN  = config.get("TWILIO_AUTH_TOKEN")
@@ -97,6 +98,7 @@ def upload_image(type, image_path):
                     {"width": 110, "height": 110, "crop": "fill"},
                     ]
             )
+
             return response
             
         if type == "product_image":
@@ -127,3 +129,6 @@ def send_message(number, message):
         logging.error(f"Error sending message: {e}")
         return "Error sending message"
     
+## generate six random numbers
+def generate_otp():
+    return random.randint(100000, 999999)
