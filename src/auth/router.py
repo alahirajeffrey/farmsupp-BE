@@ -95,18 +95,77 @@ async def change_password(
 
     return {"message": "Password changed successfully" }
 
+@router.post('/request-mobile-verification', status_code=status.HTTP_200_OK)
+async def request_mobile_verification(
+    db: Session = Depends(get_db), 
+    payload: dict = Depends(utils.validate_access_token)
+    ):
+
+    user = db.query(models.User).filter(models.User.id == payload.get('sub')).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User does not exist"
+        )
+    
+    db.query(models.Otp).filter(models.Otp.user_id == user.id).delete()
+    db.commit()
+    
+    otp = utils.generate_otp()
+    
+    formatted_mobile_number = f"{user.country_code}" + f"{user.mobile_number}"
+    utils.send_message(formatted_mobile_number, f"Your mobile verification otp is {otp}")
+
+    ## sign otp for 10 minutes
+    token = utils.create_access_token(otp, 10)
+
+    new_otp = models.Otp(
+        token = token,
+        user_id = user.id
+    )
+
+    db.add(new_otp)
+    db.commit()
+    
+    return {"message": "Mobile verification otp sent"}
+
+@router.patch('/verify-mobile', status_code=status.HTTP_200_OK)
+async def verify_mobile(
+    data: schemas.VerifyMobileSchema,
+    db: Session = Depends(get_db), 
+    payload: dict = Depends(utils.validate_access_token)
+):
+    
+    user = db.query(models.User).filter(models.User.id == payload.get('sub')).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User does not exist"
+        )
+    
+    token = db.query(models.Otp).filter(models.Otp.user_id == user.id).first()
+    decoded_token = utils.validate_access_token(token)
+    
+    if decoded_token.get("sub") != data.otp:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid Otp"
+        )
+
+    user.is_mobile_verified = True
+
+    db.commit()   
+    
+    return {"message":"Mobile number verified"}
+
 @router.post('/request-password-reset', status_code=status.HTTP_200_OK)
-async def request_password_reset():
+async def request_password_reset(
+    db: Session = Depends(get_db), 
+    payload: dict = Depends(utils.validate_access_token)):
+
+
     return {"message":"Password reset link sent"}
 
 @router.patch('/reset-password', status_code=status.HTTP_200_OK)
 async def reset_password():
     return {"message":"Reset password"}
-
-@router.post('/request-mobile-verification', status_code=status.HTTP_200_OK)
-async def request_mobile_verification():
-    return {"message":"Mobile verification otp sent"}
-
-@router.patch('/verify-mobile', status_code=status.HTTP_200_OK)
-async def verify_mobile():
-    return {"message":"Verify mobile"}
