@@ -9,14 +9,20 @@ from openai import OpenAI
 import logging
 import cloudinary
 from cloudinary import uploader
+from twilio.rest import Client
+
+TWILIO_ACCOUNT_SID = config.get('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN  = config.get("TWILIO_AUTH_TOKEN")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", scheme_name="JWT")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+## hash password
 def hash_password(password):
     return pwd_context.hash(password)
 
+## verify password
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
@@ -74,6 +80,7 @@ async def generate_openai_response(message):
 def remove_newlines(text):
     return text.replace("\n", "")
 
+## upload images to cludinary
 def upload_image(type, image_path):
     cloudinary.config(
         cloud_name=config.get("CLOUDINARY_CLOUD_NAME"),
@@ -105,4 +112,18 @@ def upload_image(type, image_path):
     except Exception as e:
         logging.error(f"Error uploading image to Cloudinary: {e}")
         return "Error uploading image to Cloudinary"
+    
+## send text messages
+def send_message(number, message):
+    client = Client(TWILIO_ACCOUNT_SID, TWILIO_ACCOUNT_SID)
+
+    try:
+        client.messages.create(
+            to= number,
+            from_= config.get("TWILIO_MOBILE_NUMBER"),
+            body= message
+        )
+    except Exception as e:
+        logging.error(f"Error sending message: {e}")
+        return "Error sending message"
     
