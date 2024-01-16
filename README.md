@@ -9,6 +9,10 @@ Farmsupp is a platform built for the agricultural sector that uses AI models to 
 - [Fastapi](https://fastapi.tiangolo.com/) is a modern, fast (high-performance), web framework for building APIs with Python 3.8+ based on standard Python type hints. Its key features are high performance, speed to develop features, reduction in bugs, ease of use, robustness.
 - [Openai](https://openai.com/) is an AI research and deployment company dedicated to ensuring that general-purpose artificial intelligence benefits all of humanity.
 
+## Todo
+
+- Ground Openai LLM on agricultural info.
+
 ## How to setup locally
 
 - Clone repository using `git clone `
