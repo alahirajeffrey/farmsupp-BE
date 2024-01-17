@@ -11,6 +11,8 @@ Farmsupp is a platform built for the agricultural sector that uses AI models to 
 
 ## Database Design
 
+![alt text](./images/farmsupp.png)
+
 ## Postgres Script
 
 ```
