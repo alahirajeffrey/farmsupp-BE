@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  dev_db:
+    image: postgres
+    container_name: dev-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=user
+      - POSTGRES_DB=farmsupp-db
+    volumes:
+      - postres:/var/lib/postgresql/data
+
+volumes:
+  postgres:
