@@ -11,7 +11,7 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_DB=farmsupp-db
     volumes:
-      - postres:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
 
 volumes:
   postgres:
