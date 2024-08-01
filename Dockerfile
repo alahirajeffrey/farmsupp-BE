@@ -1,11 +1,11 @@
-FROM python:3.9
+FROM python:3.9-slim
 
-WORKDIR /app
+WORKDIR /farmsup
 
-COPY ./requirements.txt /app/requirements.txt
+COPY ./requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 
-COPY .  /app
+COPY .  .
 
 CMD ["bash", "run_dev_server.sh"]
